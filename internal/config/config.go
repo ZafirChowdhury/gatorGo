@@ -25,3 +25,24 @@ func Read() (Config, error) {
 
 	return config, nil
 }
+
+func (c *Config) SetUser(username string) error {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return err
+	}
+
+	configPath := homeDir + configFileName
+	c.CurrentUserName = username
+
+	fileData, err := json.Marshal(c)
+	if err != nil {
+		return err
+	}
+
+	if err := os.WriteFile(configPath, fileData, 0644); err != nil {
+		return err
+	}
+
+	return nil
+}
