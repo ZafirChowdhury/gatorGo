@@ -2,21 +2,39 @@ package main
 
 import (
 	"ZafirChowdhury/gatorGo/internal/config"
-	"fmt"
+	"log"
+	"os"
 )
+
+type state struct {
+	cfg *config.Config
+}
 
 func main() {
 	cfg, err := config.Read()
 	if err != nil {
-		fmt.Printf("Error while reading from config file. Error: %s", err)
+		log.Fatalf("error reading config: %v", err)
 	}
 
-	cfg.SetUser("zafir")
+	programState := &state{
+		cfg: &cfg,
+	}
 
-	cfg, err = config.Read()
+	cmds := commands{
+		registeredCommands: make(map[string]func(*state, command) error),
+	}
+
+	cmds.register("login", handlerLogin)
+
+	if len(os.Args) < 2 {
+		log.Fatal("Usage: cli <command> [args...]")
+	}
+
+	cmdName := os.Args[1]
+	cmdArgs := os.Args[2:]
+
+	err = cmds.run(programState, command{Name: cmdName, Args: cmdArgs})
 	if err != nil {
-		fmt.Printf("Error while reading from config file. Error: %s", err)
+		log.Fatal(err)
 	}
-
-	fmt.Println(cfg)
 }
