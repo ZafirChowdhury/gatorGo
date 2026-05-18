@@ -11,10 +11,10 @@ VALUES (
 RETURNING *; 
 
 
--- name: GetFeed :one
+-- name: GetFeedByUrl :one
 SELECT *
 FROM feeds 
-WHERE id = $1;
+WHERE url = $1;
 
 
 -- name: GetFeeds :many
