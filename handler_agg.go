@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func handlerRss(s *state, cmd command) error {
+func handlerAgg(s *state, cmd command) error {
 	url := "https://www.wagslane.dev/index.xml"
 
 	rss, err := fetchFeed(context.Background(), url)
