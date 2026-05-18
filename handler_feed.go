@@ -15,7 +15,7 @@ func handlerAddFeed(s *state, cmd command) error {
 	}
 
 	name, url := cmd.Args[0], cmd.Args[1]
-	currentUser, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
+	currentUser, err := s.db.GetUserByName(context.Background(), s.cfg.CurrentUserName)
 	if err != nil {
 		return err
 	}
@@ -30,15 +30,35 @@ func handlerAddFeed(s *state, cmd command) error {
 	})
 
 	fmt.Println("Feed craeted sucesfully:")
-	printFeed(feed)
+	printFeed(feed, currentUser.Name)
 	return nil
 }
 
-func printFeed(feed database.Feed) {
-	fmt.Printf("* ID:            %s\n", feed.ID)
-	fmt.Printf("* Created:       %v\n", feed.CreatedAt)
-	fmt.Printf("* Updated:       %v\n", feed.UpdatedAt)
-	fmt.Printf("* Name:          %s\n", feed.Name)
-	fmt.Printf("* URL:           %s\n", feed.Url)
-	fmt.Printf("* UserID:        %s\n", feed.UserID)
+func handlerFeeds(s *state, cmd command) error {
+	feeds, err := s.db.GetFeeds(context.Background())
+	if err != nil {
+		return err
+	}
+
+	// weried ass code just to satisfy both me and the lesson requrments
+	for _, feed := range feeds {
+		printFeed(database.Feed{
+			ID:        feed.ID,
+			CreatedAt: feed.CreatedAt,
+			UpdatedAt: feed.UpdatedAt,
+			Name:      feed.Name,
+			Url:       feed.Url,
+		}, feed.UserName)
+	}
+
+	return nil
+}
+
+func printFeed(feed database.Feed, userName string) {
+	fmt.Printf("* ID:             	 %s\n", feed.ID)
+	fmt.Printf("* Created:        	 %v\n", feed.CreatedAt)
+	fmt.Printf("* Updated:       	 %v\n", feed.UpdatedAt)
+	fmt.Printf("* Name:          	 %s\n", feed.Name)
+	fmt.Printf("* URL:           	 %s\n", feed.Url)
+	fmt.Printf("* Created by:        %s\n", userName)
 }
