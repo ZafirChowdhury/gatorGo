@@ -76,6 +76,7 @@ func scrapeFeed(db *database.Queries, feed database.Feed) {
 			PublishedAt: publishedAt,
 		})
 		if err != nil {
+			// post allready exist skip to next one
 			if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
 				continue
 			}
